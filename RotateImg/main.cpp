@@ -5,34 +5,53 @@ int main(int argc, char* argv[])
     char* imgPath = argv[1];
     double angle = atof(argv[2]);
 
+    
     Mat srcImg = imread(imgPath);
-    Mat dstImg = imread(imgPath);
+    Mat dstImg(srcImg.rows, srcImg.cols, CV_8UC3, Scalar(0, 0, 0));
 
-    const double PI = 3.1415926;
+    double PI = 3.1415926;
+    double radian = angle * PI / 180;
 
-    for (int x = 0; x < dstImg.rows; x++)
+    // print original
+    // moving center
+
+
+
+    for (int row = 0; row < dstImg.rows ; row++)
     {
-        for (int y = 0; y < dstImg.cols; y++)
+        for (int col = 0; col < dstImg.cols; col++)
         {
-            
-            // x = (x)(cos)(seta) - (y)(sin)(seta)
-            // y = (x)(sin)(seta) + (y)(cos)(seta)
+            int x = col;
+            int y = row;
 
+            int xPrime = (x * cos(radian)) + (y * sin(radian));
+            int yPrime = (x * sin(radian)) - (y * cos(radian));
 
-            uint8_t value = dstImg.at<uint8_t>(x, y);
+            int newX = xPrime + (dstImg.cols / 2); // 
+            int newY = yPrime - (dstImg.rows / 2); // 
 
-            int xPrime = x * cos(angle * PI / 180) - y * sin(angle * PI / 180);
-            int yPrime = x * sin(angle * PI / 180) + y * cos(angle * PI / 180);
+            if (newX < 0 || newX >= dstImg.cols)
+            {
+                continue;
+            }
+            if (newY < 0 || newY >= dstImg.rows)
+            {
+                continue;
+            }
 
-            dstImg.at<uint8_t>(xPrime, yPrime) = value;
-
+            dstImg.at<Vec3b>(newX, newY) = srcImg.at<Vec3b>(x, y);
         }
     }
     
-    // print
-    imshow(imgPath, srcImg);
-    imshow(imgPath, dstImg);
+
+    namedWindow("ORIGINAL IMAGE", WINDOW_AUTOSIZE);
+    imshow("ORIGINAL IMAGE", srcImg);
+    // print modified
+    namedWindow("MODIFIED IMAGE", WINDOW_AUTOSIZE);
+    imshow("MODIFIED IMAGE", dstImg);
     waitKey(0);
 
     return 0;
 }
+
+// add const
