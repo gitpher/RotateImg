@@ -6,6 +6,7 @@
 
 #include <iostream>
 #include <stdint.h>
+#include <cmath>
 
 using namespace std;
 using namespace cv;

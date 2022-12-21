@@ -8,15 +8,24 @@ int main(int argc, char* argv[])
     Mat srcImg = imread(imgPath);
     Mat dstImg = imread(imgPath);
 
+    const double PI = 3.1415926;
 
-    for (int r = 0; r < dstImg.rows; r++)
+    for (int x = 0; x < dstImg.rows; x++)
     {
-        for (int c = 0; c < dstImg.cols; c++)
+        for (int y = 0; y < dstImg.cols; y++)
         {
             
             // x = (x)(cos)(seta) - (y)(sin)(seta)
             // y = (x)(sin)(seta) + (y)(cos)(seta)
-            dstImg.at<uint8_t>(r, c);
+
+
+            uint8_t value = dstImg.at<uint8_t>(x, y);
+
+            int xPrime = x * cos(angle * PI / 180) - y * sin(angle * PI / 180);
+            int yPrime = x * sin(angle * PI / 180) + y * cos(angle * PI / 180);
+
+            dstImg.at<uint8_t>(xPrime, yPrime) = value;
+
         }
     }
     
