@@ -6,16 +6,17 @@ int main(int argc, char* argv[])
     double angle = atof(argv[2]);
 
     Mat img = imread(imgPath);
-
-    int row = img.rows;
-    int col = img.cols;
-
-    // print
-    namedWindow(imgPath, WINDOW_AUTOSIZE);
+    
+    for (int row = 0; row < img.rows; row++)
+    {
+        for (int col = 0; col < img.cols; col++)
+        {
+            img.at<uint8_t>(row, col);
+        }
+    }
+    
     imshow(imgPath, img);
-    moveWindow(imgPath, 0, 45);
     waitKey(0);
-    destroyAllWindows();
 
     return 0;
 }
