@@ -5,7 +5,6 @@ int main(int argc, char* argv[])
     char* imgPath = argv[1];
     double angle = atof(argv[2]);
 
-    
     Mat srcImg = imread(imgPath);
     int hypothenuseOfSrcImg = sqrt(pow(srcImg.rows, 2) + pow(srcImg.cols, 2));
     Mat dstImg(srcImg.rows, srcImg.cols, CV_8UC3, Scalar(0, 0, 0));
@@ -41,6 +40,7 @@ int main(int argc, char* argv[])
     
     // modified의 크기 최적화
     // tran
+
 
     namedWindow("ORIGINAL IMAGE", WINDOW_AUTOSIZE);
     imshow("ORIGINAL IMAGE", srcImg);
