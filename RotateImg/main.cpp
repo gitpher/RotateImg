@@ -21,6 +21,7 @@ int main(int argc, char* argv[])
 
     Mat dstImg(newHeight, newWidth, CV_8UC3, Scalar(0, 0, 0)); // interpolation 때문에 여기를 나중에 바꿔야 할 수도
 
+    // 2중 for문은 맞는데...
     for (int row = 0; row < srcImg.rows ; row++)
     {
         for (int col = 0; col < srcImg.cols; col++)
@@ -28,22 +29,12 @@ int main(int argc, char* argv[])
             int x = col - (srcImg.cols / 2);
             int y = row - (srcImg.rows / 2);
 
-            int xPrime = (x * cos(radian)) - (y * sin(radian));
-            int yPrime = (x * sin(radian)) + (y * cos(radian));
+            double xPrime = (x * cos(radian)) - (y * sin(radian)); //
+            double yPrime = (x * sin(radian)) + (y * cos(radian)); //
 
             int newRow = yPrime + (newHeight / 2); 
             int newCol = xPrime + (newWidth / 2);  
 
-            // 내가 넣으려고 하는데 뭐있어? 그러면 그 다음 거에 넣어
-            if (dstImg.at<Vec3b>(newRow, newCol)[0] == 0 && dstImg.at<Vec3b>(newRow, newCol)[1] == 0 && dstImg.at<Vec3b>(newRow, newCol)[2] == 0)
-            {
-                newCol += 1;
-                if (newCol == dstImg.cols - 1)
-                {
-                    newRow += 1;
-                    newCol = 0;
-                }
-            }//
 
             if (newRow < 0 || newRow > newHeight - 1)
             {
@@ -58,7 +49,7 @@ int main(int argc, char* argv[])
         }
     }
 
-    /**/
+    /*
     for (int row = 0; row < dstImg.rows; row++)
     {
         for (int col = 0; col < dstImg.cols; col++)
@@ -254,7 +245,7 @@ int main(int argc, char* argv[])
             }
         }
     }
-    /**/
+    */
 
     namedWindow("ORIGINAL IMAGE", WINDOW_AUTOSIZE);
     imshow("ORIGINAL IMAGE", srcImg);
