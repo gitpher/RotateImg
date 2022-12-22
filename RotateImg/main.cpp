@@ -5,7 +5,7 @@ int main(int argc, char* argv[])
     char* imgPath = argv[1];
     double angle = atof(argv[2]);
 
-    double PI = 3.1415926;
+    double PI = 3.14159265358979323846;
     double radian = angle * PI / 180;
 
     Mat srcImg = imread(imgPath);
@@ -47,17 +47,6 @@ int main(int argc, char* argv[])
             dstImg.at<Vec3b>(newRow, newCol) = srcImg.at<Vec3b>(row, col); 
         }
     }
-    
-    cout << "*************************" << dstImg.at<Vec3b>(0, 0) << endl;
-    cout << "*************************" << dstImg.at<Vec3b>(dstImg.rows - 1, 0) << endl;
-    cout << "*************************" << dstImg.at<Vec3b>(0, dstImg.cols - 1) << endl;
-
-    cout << endl;
-
-    cout << "*************************" << dstImg.at<Vec3b>(0, 0)[0] << endl;
-    cout << "*************************" << dstImg.at<Vec3b>(0, 0)[1] << endl;
-    cout << "*************************" << dstImg.at<Vec3b>(0, 0)[2] << endl;
-
 
     for (int row = 0; row < dstImg.rows; row++)
     {
@@ -69,11 +58,11 @@ int main(int argc, char* argv[])
                 {
                     uint8_t topB = dstImg.at<Vec3b>(row - 1, col)[0];
                     uint8_t topG = dstImg.at<Vec3b>(row - 1, col)[1];
-                    uint8_t topR = dstImg.at<Vec3b>(row - 1, col)[2];;
+                    uint8_t topR = dstImg.at<Vec3b>(row - 1, col)[2];
                     
-                    uint8_t bottomB = dstImg.at<Vec3b>(row + 1, col)[0];;
-                    uint8_t bottomG = dstImg.at<Vec3b>(row + 1, col)[1];;
-                    uint8_t bottomR = dstImg.at<Vec3b>(row + 1, col)[2];;
+                    uint8_t bottomB = dstImg.at<Vec3b>(row + 1, col)[0];
+                    uint8_t bottomG = dstImg.at<Vec3b>(row + 1, col)[1];
+                    uint8_t bottomR = dstImg.at<Vec3b>(row + 1, col)[2];
                     
                     uint8_t leftB = dstImg.at<Vec3b>(row, col - 1)[0];
                     uint8_t leftG = dstImg.at<Vec3b>(row, col - 1)[1];
