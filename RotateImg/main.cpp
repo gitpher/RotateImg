@@ -34,6 +34,17 @@ int main(int argc, char* argv[])
             int newRow = yPrime + (newHeight / 2); 
             int newCol = xPrime + (newWidth / 2);  
 
+            // 내가 넣으려고 하는데 뭐있어? 그러면 그 다음 거에 넣어
+            if (dstImg.at<Vec3b>(newRow, newCol)[0] == 0 && dstImg.at<Vec3b>(newRow, newCol)[1] == 0 && dstImg.at<Vec3b>(newRow, newCol)[2] == 0)
+            {
+                newCol += 1;
+                if (newCol == dstImg.cols - 1)
+                {
+                    newRow += 1;
+                    newCol = 0;
+                }
+            }//
+
             if (newRow < 0 || newRow > newHeight - 1)
             {
                 continue;
@@ -47,6 +58,7 @@ int main(int argc, char* argv[])
         }
     }
 
+    /**/
     for (int row = 0; row < dstImg.rows; row++)
     {
         for (int col = 0; col < dstImg.cols; col++)
@@ -242,8 +254,7 @@ int main(int argc, char* argv[])
             }
         }
     }
-
-
+    /**/
 
     namedWindow("ORIGINAL IMAGE", WINDOW_AUTOSIZE);
     imshow("ORIGINAL IMAGE", srcImg);
