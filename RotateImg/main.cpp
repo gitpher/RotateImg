@@ -65,11 +65,31 @@ int main(int argc, char* argv[])
         {
             if (dstImg.at<Vec3b>(row, col)[0] == 0 && dstImg.at<Vec3b>(row, col)[1] == 0 && dstImg.at<Vec3b>(row, col)[2] == 0)
             {
-                if (col < dstImg.cols - 1)
+                if (row > 0 && row < dstImg.rows - 1 && col > 0 && col < dstImg.cols - 1)
                 {
-                    dstImg.at<Vec3b>(row, col)[0] = dstImg.at<Vec3b>(row, col + 1)[0];
-                    dstImg.at<Vec3b>(row, col)[1] = dstImg.at<Vec3b>(row, col + 1)[1];
-                    dstImg.at<Vec3b>(row, col)[2] = dstImg.at<Vec3b>(row, col + 1)[2];
+                    uint8_t topB = dstImg.at<Vec3b>(row - 1, col)[0];
+                    uint8_t topG = dstImg.at<Vec3b>(row - 1, col)[1];
+                    uint8_t topR = dstImg.at<Vec3b>(row - 1, col)[2];;
+                    
+                    uint8_t bottomB = dstImg.at<Vec3b>(row + 1, col)[0];;
+                    uint8_t bottomG = dstImg.at<Vec3b>(row + 1, col)[1];;
+                    uint8_t bottomR = dstImg.at<Vec3b>(row + 1, col)[2];;
+                    
+                    uint8_t leftB = dstImg.at<Vec3b>(row, col - 1)[0];
+                    uint8_t leftG = dstImg.at<Vec3b>(row, col - 1)[1];
+                    uint8_t leftR = dstImg.at<Vec3b>(row, col - 1)[2];
+
+                    uint8_t rightB = dstImg.at<Vec3b>(row, col + 1)[0];
+                    uint8_t rightG = dstImg.at<Vec3b>(row, col + 1)[1];
+                    uint8_t rightR = dstImg.at<Vec3b>(row, col + 1)[2];
+
+                    uint8_t averageB = (topB + bottomB + leftB + rightB) / 4;
+                    uint8_t averageG = (topG + bottomG + leftG + rightG) / 4;
+                    uint8_t averageR = (topR + bottomR + leftR + rightR) / 4;
+
+                    dstImg.at<Vec3b>(row, col)[0] = averageB;
+                    dstImg.at<Vec3b>(row, col)[1] = averageG;
+                    dstImg.at<Vec3b>(row, col)[2] = averageR;
                 }
             }
         }
