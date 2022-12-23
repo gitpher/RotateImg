@@ -56,14 +56,11 @@ int main(int argc, char* argv[])
             }
 
             // interpolation
-            // col의 소수점만큼 오른쪽에 있는 거에 가깝게 색을 넣어줌
-            // row의 소수점만큼 밑에 있는 거에 가깝게 색을 넣어줌
-            dstImg.at<Vec3b>(h, w)[0] = srcImg.at<Vec3b>(row, col)[0] + (col - round(col));
-            dstImg.at<Vec3b>(h, w)[1] = srcImg.at<Vec3b>(row, col)[1] + (col - round(col));
-            dstImg.at<Vec3b>(h, w)[2] = srcImg.at<Vec3b>(row, col)[2] + (col - round(col));
+            // col의 소수점+1만큼 오른쪽에 있는 거에 가깝게 색을 넣어줌
+            // row의 소수점+1만큼 밑에 있는 거에 가깝게 색을 넣어줌
+            
 
-
-            //dstImg.at<Vec3b>(h, w) = srcImg.at<Vec3b>(row, col);
+            dstImg.at<Vec3b>(h, w) = srcImg.at<Vec3b>(row, col);
         }
     }
 
