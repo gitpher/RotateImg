@@ -2,64 +2,69 @@
 
 int main(int argc, char* argv[])
 {
-    const char* const imagePath = argv[1];
-    const double angle = atof(argv[2]);
-    const double PI = 3.14159265358979323846;
-    const double radian = angle * PI / 180;
+    char* imgPath = argv[1];
+    double angle = atof(argv[2]);
 
-    Mat sourceImage = imread(imagePath);
+    double PI = 3.14159265358979323846; // 나중에 cmath PI로 대체
+    double radian = angle * PI / 180;
 
-    if (sourceImage.empty())
+    Mat srcImg = imread(imgPath);
+
+    if (srcImg.empty())
     {
         cout << "THERE IS NO IMAGE" << endl;
         return 1;
     }
 
-    int destinationImageWidth = (sourceImage.cols * cos(radian)) + (sourceImage.rows * sin(radian));
-    int destinationImageHeight = (sourceImage.cols * sin(radian)) + (sourceImage.rows * cos(radian));
+    double srcImg_h = srcImg.rows;
+    double srcImg_w = srcImg.cols;
 
-    Mat destinationImage(destinationImageHeight, destinationImageWidth, CV_8UC3, Scalar(0, 0, 0)); 
+    double dstImg_h = (srcImg.cols * sin(radian)) + (srcImg.rows * cos(radian));
+    double dstImg_w = (srcImg.cols * cos(radian)) + (srcImg.rows * sin(radian));
+    
+    Mat dstImg(dstImg_h, dstImg_w, CV_8UC3, Scalar(0, 0, 0)); 
 
-    for (int row = 0; row < destinationImageHeight; row++)
+    for (int h = 0; h < dstImg_h; h++)
     {
-        for (int col = 0; col < destinationImageWidth; col++)
+        for (int w = 0; w < dstImg_w; w++)
         {
-            /* destinationImage의 반만큼 왼쪽과 위로 올리기 */
-            double x = col - (destinationImageWidth / 2);
-            double y = row - (destinationImageHeight / 2);
+            double x = w - (dstImg_w / 2);
+            double y = h - (dstImg_h / 2);
             
-            /* 역행렬 */ 
-            double xPrime = (x * cos(radian)) + (y * sin(radian));
-            double yPrime = ((-x) * sin(radian)) + (y * cos(radian));
+            double xP = (x * cos(radian)) + (y * sin(radian));
+            double yP = ((-x) * sin(radian)) + (y * cos(radian));
 
-            /* destinationImage의 반만큼 오른쪽과 아래로 내리기 */
-            double newRow = yPrime + (sourceImage.rows / 2); //
-            double newCol = xPrime + (sourceImage.cols / 2); //
+            double row = yP + (srcImg_h / 2);
+            double col = xP + (srcImg_w / 2);
 
-            if (newRow < 0 || newRow > sourceImage.rows - 1)
+            // if문 나중에 단순화 / 리팩터링
+            if (row < 0 || row > srcImg_h - 1)
             {
                 continue;
             }
-            if (newCol < 0 || newCol > sourceImage.cols - 1)
+            if (col < 0 || col > srcImg_w - 1)
             {
                 continue;
             }
-            if (row < 0 || row > destinationImageHeight - 1)
+            if (h < 0 || h > dstImg_h - 1)
             {
                 continue;
             }
-            if (col < 0 || col > destinationImageWidth - 1)
+            if (w < 0 || w > dstImg_w - 1)
             {
                 continue;
             }
 
-            destinationImage.at<Vec3b>(row, col) = sourceImage.at<Vec3b>(newRow, newCol);
+            // interpolation
+
+            dstImg.at<Vec3b>(h, w) = srcImg.at<Vec3b>(row, col);
         }
     }
 
-    displayImage(sourceImage, "ORIGINAL IMAGE");
-    displayImage(destinationImage, "ROTATED IMAGE");
+    displayImage(srcImg, "ORIGINAL IMAGE");
+    displayImage(dstImg, "ROTATED IMAGE");
     waitKey(0);
     
     return 0;
 }
+// const 추가
