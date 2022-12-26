@@ -1,7 +1,24 @@
 ﻿#include "RotateImg.h"
 
-Mat createDstImg(Mat& srcImg, double radian)
+double getRadian(double angle)
 {
+    return angle * PI / 180;
+}
+
+Mat createDstImg(Mat& srcImg, double angle)
+{
+    double radian;
+
+    if (angle > 90)
+    {
+        // angle을 가공
+        radian = getRadian(angle);
+    }
+    else
+    {
+        radian = getRadian(angle);
+    }
+
 	int dstRow = (srcImg.cols * sin(radian)) + (srcImg.rows * cos(radian));
 	int dstCol = (srcImg.cols * cos(radian)) + (srcImg.rows * sin(radian));
 

@@ -11,7 +11,10 @@
 using namespace std;
 using namespace cv;
 
-Mat createDstImg(Mat& srcImg, const double radian);
+const double PI = 3.14159265358979323846;
+
+double getRadian(double angle);
+Mat createDstImg(Mat& srcImg, double angle, double radian);
 void fillDstImg(Mat& dstImg, Mat& srcImg, double radian);
 bool isOutOfBounds(Mat& dstImg, Mat& srcImg, int dstRow, int dstCol, float srcRow, float srcCol);
 void interpolateDstImg(Mat& dstImg, Mat& srcImg, int dstRow, int dstCol, double srcRow, double srcCol);
