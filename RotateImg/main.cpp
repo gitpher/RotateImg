@@ -14,7 +14,7 @@ int main(int argc, char* argv[])
         return 1;
     }
 
-    Mat dstImg = createDstImg(srcImg, angle, radian);
+    Mat dstImg = createDstImg(srcImg, angle);
     fillDstImg(dstImg, srcImg, radian);
 
     displayImage(srcImg, "ORIGINAL IMAGE");

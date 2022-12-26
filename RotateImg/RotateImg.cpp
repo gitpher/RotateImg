@@ -11,7 +11,7 @@ Mat createDstImg(Mat& srcImg, double angle)
 
     if (angle > 90)
     {
-        // angle을 가공
+        angle -= 90;
         radian = getRadian(angle);
     }
     else
