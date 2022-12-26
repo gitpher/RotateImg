@@ -1,207 +1,81 @@
 ﻿#include "RotateImg.h"
 
-void displayImage(Mat& image, string name) // 나중에 name 어떻게 바꿀지 정하기
+Mat createDstImg(Mat& srcImg, double radian)
 {
-	namedWindow(name, WINDOW_AUTOSIZE);
-	imshow(name, image);
+	int dstRow = (srcImg.cols * sin(radian)) + (srcImg.rows * cos(radian));
+	int dstCol = (srcImg.cols * cos(radian)) + (srcImg.rows * sin(radian));
+
+	Mat dstImg(dstRow, dstCol, CV_8UC3, Scalar(0, 0, 0));
+
+	return dstImg;
 }
 
-
-
-/*
-    for (int row = 0; row < dstImg.rows; row++)
+void fillDstImg(Mat& dstImg, Mat& srcImg, double radian)
+{
+    for (int dstRow = 0; dstRow < dstImg.rows; dstRow++)
     {
-        for (int col = 0; col < dstImg.cols; col++)
+        for (int dstCol = 0; dstCol < dstImg.cols; dstCol++)
         {
-            if (dstImg.at<Vec3b>(row, col)[0] == 0 && dstImg.at<Vec3b>(row, col)[1] == 0 && dstImg.at<Vec3b>(row, col)[2] == 0)
-            {
-                if (row > 0 && row < dstImg.rows - 1 && col > 0 && col < dstImg.cols - 1)
-                {
-                    uint8_t topB = dstImg.at<Vec3b>(row - 1, col)[0];
-                    uint8_t topG = dstImg.at<Vec3b>(row - 1, col)[1];
-                    uint8_t topR = dstImg.at<Vec3b>(row - 1, col)[2];
+            double x = dstCol - (dstImg.cols / 2);
+            double y = dstRow - (dstImg.rows / 2);
 
-                    uint8_t bottomB = dstImg.at<Vec3b>(row + 1, col)[0];
-                    uint8_t bottomG = dstImg.at<Vec3b>(row + 1, col)[1];
-                    uint8_t bottomR = dstImg.at<Vec3b>(row + 1, col)[2];
+            double xP = (x * cos(radian)) + (y * sin(radian));
+            double yP = ((-x) * sin(radian)) + (y * cos(radian));
 
-                    uint8_t leftB = dstImg.at<Vec3b>(row, col - 1)[0];
-                    uint8_t leftG = dstImg.at<Vec3b>(row, col - 1)[1];
-                    uint8_t leftR = dstImg.at<Vec3b>(row, col - 1)[2];
+            double srcRow = yP + (srcImg.rows / 2);
+            double srcCol = xP + (srcImg.cols / 2);
 
-                    uint8_t rightB = dstImg.at<Vec3b>(row, col + 1)[0];
-                    uint8_t rightG = dstImg.at<Vec3b>(row, col + 1)[1];
-                    uint8_t rightR = dstImg.at<Vec3b>(row, col + 1)[2];
-
-                    uint8_t averageB = (topB + bottomB + leftB + rightB) / 4;
-                    uint8_t averageG = (topG + bottomG + leftG + rightG) / 4;
-                    uint8_t averageR = (topR + bottomR + leftR + rightR) / 4;
-
-                    dstImg.at<Vec3b>(row, col)[0] = averageB;
-                    dstImg.at<Vec3b>(row, col)[1] = averageG;
-                    dstImg.at<Vec3b>(row, col)[2] = averageR;
-                }
-                else if (row == 0 && col == 0) // top left corner
-                {
-                    uint8_t bottomB = dstImg.at<Vec3b>(row + 1, col)[0];
-                    uint8_t bottomG = dstImg.at<Vec3b>(row + 1, col)[1];
-                    uint8_t bottomR = dstImg.at<Vec3b>(row + 1, col)[2];
-
-                    uint8_t rightB = dstImg.at<Vec3b>(row, col + 1)[0];
-                    uint8_t rightG = dstImg.at<Vec3b>(row, col + 1)[1];
-                    uint8_t rightR = dstImg.at<Vec3b>(row, col + 1)[2];
-
-                    uint8_t averageB = (bottomB + rightB) / 2;
-                    uint8_t averageG = (bottomG + rightG) / 2;
-                    uint8_t averageR = (bottomR + rightR) / 2;
-
-                    dstImg.at<Vec3b>(row, col)[0] = averageB;
-                    dstImg.at<Vec3b>(row, col)[1] = averageG;
-                    dstImg.at<Vec3b>(row, col)[2] = averageR;
-                }
-                else if (row == 0 && col == dstImg.cols - 1) // top right corner
-                {
-                    uint8_t bottomB = dstImg.at<Vec3b>(row + 1, col)[0];
-                    uint8_t bottomG = dstImg.at<Vec3b>(row + 1, col)[1];
-                    uint8_t bottomR = dstImg.at<Vec3b>(row + 1, col)[2];
-
-                    uint8_t leftB = dstImg.at<Vec3b>(row, col - 1)[0];
-                    uint8_t leftG = dstImg.at<Vec3b>(row, col - 1)[1];
-                    uint8_t leftR = dstImg.at<Vec3b>(row, col - 1)[2];
-
-                    uint8_t averageB = (bottomB + leftB) / 2;
-                    uint8_t averageG = (bottomG + leftG) / 2;
-                    uint8_t averageR = (bottomR + leftR) / 2;
-
-                    dstImg.at<Vec3b>(row, col)[0] = averageB;
-                    dstImg.at<Vec3b>(row, col)[1] = averageG;
-                    dstImg.at<Vec3b>(row, col)[2] = averageR;
-                }
-                else if (row == dstImg.rows - 1 && col == 0) // bottom left corner
-                {
-                    uint8_t topB = dstImg.at<Vec3b>(row - 1, col)[0];
-                    uint8_t topG = dstImg.at<Vec3b>(row - 1, col)[1];
-                    uint8_t topR = dstImg.at<Vec3b>(row - 1, col)[2];
-
-                    uint8_t rightB = dstImg.at<Vec3b>(row, col + 1)[0];
-                    uint8_t rightG = dstImg.at<Vec3b>(row, col + 1)[1];
-                    uint8_t rightR = dstImg.at<Vec3b>(row, col + 1)[2];
-
-                    uint8_t averageB = (topB + rightB) / 2;
-                    uint8_t averageG = (topG + rightG) / 2;
-                    uint8_t averageR = (topR + rightR) / 2;
-
-                    dstImg.at<Vec3b>(row, col)[0] = averageB;
-                    dstImg.at<Vec3b>(row, col)[1] = averageG;
-                    dstImg.at<Vec3b>(row, col)[2] = averageR;
-                }
-                else if (row == dstImg.rows - 1 && col == dstImg.cols - 1) // bottom right corner
-                {
-                    uint8_t topB = dstImg.at<Vec3b>(row - 1, col)[0];
-                    uint8_t topG = dstImg.at<Vec3b>(row - 1, col)[1];
-                    uint8_t topR = dstImg.at<Vec3b>(row - 1, col)[2];
-
-                    uint8_t leftB = dstImg.at<Vec3b>(row, col - 1)[0];
-                    uint8_t leftG = dstImg.at<Vec3b>(row, col - 1)[1];
-                    uint8_t leftR = dstImg.at<Vec3b>(row, col - 1)[2];
-
-                    uint8_t averageB = (topB + leftB) / 2;
-                    uint8_t averageG = (topG + leftG) / 2;
-                    uint8_t averageR = (topR + leftR) / 2;
-
-                    dstImg.at<Vec3b>(row, col)[0] = averageB;
-                    dstImg.at<Vec3b>(row, col)[1] = averageG;
-                    dstImg.at<Vec3b>(row, col)[2] = averageR;
-                }
-                else if (row > 0 && row < dstImg.rows - 1 && col == 0) // left side
-                {
-                    uint8_t topB = dstImg.at<Vec3b>(row - 1, col)[0];
-                    uint8_t topG = dstImg.at<Vec3b>(row - 1, col)[1];
-                    uint8_t topR = dstImg.at<Vec3b>(row - 1, col)[2];
-
-                    uint8_t bottomB = dstImg.at<Vec3b>(row + 1, col)[0];
-                    uint8_t bottomG = dstImg.at<Vec3b>(row + 1, col)[1];
-                    uint8_t bottomR = dstImg.at<Vec3b>(row + 1, col)[2];
-
-                    uint8_t rightB = dstImg.at<Vec3b>(row, col + 1)[0];
-                    uint8_t rightG = dstImg.at<Vec3b>(row, col + 1)[1];
-                    uint8_t rightR = dstImg.at<Vec3b>(row, col + 1)[2];
-
-                    uint8_t averageB = (topB + bottomB + rightB) / 3;
-                    uint8_t averageG = (topG + bottomG + rightG) / 3;
-                    uint8_t averageR = (topR + bottomR + rightR) / 3;
-
-                    dstImg.at<Vec3b>(row, col)[0] = averageB;
-                    dstImg.at<Vec3b>(row, col)[1] = averageG;
-                    dstImg.at<Vec3b>(row, col)[2] = averageR;
-                }
-                else if (row > 0 && row < dstImg.rows && col == dstImg.cols - 1) // right side
-                {
-                    uint8_t topB = dstImg.at<Vec3b>(row - 1, col)[0];
-                    uint8_t topG = dstImg.at<Vec3b>(row - 1, col)[1];
-                    uint8_t topR = dstImg.at<Vec3b>(row - 1, col)[2];
-
-                    uint8_t bottomB = dstImg.at<Vec3b>(row + 1, col)[0];
-                    uint8_t bottomG = dstImg.at<Vec3b>(row + 1, col)[1];
-                    uint8_t bottomR = dstImg.at<Vec3b>(row + 1, col)[2];
-
-                    uint8_t leftB = dstImg.at<Vec3b>(row, col - 1)[0];
-                    uint8_t leftG = dstImg.at<Vec3b>(row, col - 1)[1];
-                    uint8_t leftR = dstImg.at<Vec3b>(row, col - 1)[2];
-
-                    uint8_t averageB = (topB + bottomB + leftB) / 3;
-                    uint8_t averageG = (topG + bottomG + leftG) / 3;
-                    uint8_t averageR = (topR + bottomR + leftR) / 3;
-
-                    dstImg.at<Vec3b>(row, col)[0] = averageB;
-                    dstImg.at<Vec3b>(row, col)[1] = averageG;
-                    dstImg.at<Vec3b>(row, col)[2] = averageR;
-                }
-                else if (col > 0 && col < dstImg.cols - 1 && row == 0) // top side
-                {
-                    uint8_t bottomB = dstImg.at<Vec3b>(row + 1, col)[0];
-                    uint8_t bottomG = dstImg.at<Vec3b>(row + 1, col)[1];
-                    uint8_t bottomR = dstImg.at<Vec3b>(row + 1, col)[2];
-
-                    uint8_t leftB = dstImg.at<Vec3b>(row, col - 1)[0];
-                    uint8_t leftG = dstImg.at<Vec3b>(row, col - 1)[1];
-                    uint8_t leftR = dstImg.at<Vec3b>(row, col - 1)[2];
-
-                    uint8_t rightB = dstImg.at<Vec3b>(row, col + 1)[0];
-                    uint8_t rightG = dstImg.at<Vec3b>(row, col + 1)[1];
-                    uint8_t rightR = dstImg.at<Vec3b>(row, col + 1)[2];
-
-                    uint8_t averageB = (bottomB + leftB + rightB) / 3;
-                    uint8_t averageG = (bottomG + leftG + rightG) / 3;
-                    uint8_t averageR = (bottomR + leftR + rightR) / 3;
-
-                    dstImg.at<Vec3b>(row, col)[0] = averageB;
-                    dstImg.at<Vec3b>(row, col)[1] = averageG;
-                    dstImg.at<Vec3b>(row, col)[2] = averageR;
-                }
-                else if (col > 0 && col < dstImg.cols - 1 && row == dstImg.rows -1 ) // bottom side
-                {
-                    uint8_t topB = dstImg.at<Vec3b>(row - 1, col)[0];
-                    uint8_t topG = dstImg.at<Vec3b>(row - 1, col)[1];
-                    uint8_t topR = dstImg.at<Vec3b>(row - 1, col)[2];
-
-                    uint8_t leftB = dstImg.at<Vec3b>(row, col - 1)[0];
-                    uint8_t leftG = dstImg.at<Vec3b>(row, col - 1)[1];
-                    uint8_t leftR = dstImg.at<Vec3b>(row, col - 1)[2];
-
-                    uint8_t rightB = dstImg.at<Vec3b>(row, col + 1)[0];
-                    uint8_t rightG = dstImg.at<Vec3b>(row, col + 1)[1];
-                    uint8_t rightR = dstImg.at<Vec3b>(row, col + 1)[2];
-
-                    uint8_t averageB = (topB + leftB + rightB) / 3;
-                    uint8_t averageG = (topG + leftG + rightG) / 3;
-                    uint8_t averageR = (topR + leftR + rightR) / 3;
-
-                    dstImg.at<Vec3b>(row, col)[0] = averageB;
-                    dstImg.at<Vec3b>(row, col)[1] = averageG;
-                    dstImg.at<Vec3b>(row, col)[2] = averageR;
-                }
-            }
+            interpolateDstImg(dstImg, srcImg, dstRow, dstCol, srcRow, srcCol);
         }
     }
-    */
+}
+
+bool isOutOfBounds(Mat& dstImg, Mat& srcImg, int dstRow, int dstCol, float srcRow, float srcCol)
+{
+    if (srcRow < 0 || srcRow > srcImg.rows - 1)
+    {
+        return true;
+    }
+    if (srcCol < 0 || srcCol > srcImg.cols - 1)
+    {
+        return true;
+    }
+    return false;
+}
+
+void interpolateDstImg(Mat& dstImg, Mat& srcImg, int dstRow, int dstCol, double srcRow, double srcCol)
+{
+    for (int i = 0; i < 3; i++)
+    {
+        if (isOutOfBounds(dstImg, srcImg, dstRow, dstCol, srcRow, srcCol))
+        {
+            continue;
+        }
+
+        if (srcRow == srcImg.rows - 1 || srcCol == srcImg.cols - 1)
+        {
+            dstImg.at<Vec3b>(dstRow, dstCol)[i] = srcImg.at<Vec3b>(srcRow, srcCol)[i];
+        }
+        else
+        {
+            double weightHorizontal = srcCol - floor(srcCol);
+            double weightVertical = srcRow - floor(srcRow);
+
+            uchar pxRef = srcImg.at<Vec3b>((int)srcRow, (int)srcCol)[i];
+            uchar pxToTheRight = srcImg.at<Vec3b>((int)srcRow, (int)srcCol + 1)[i];
+            uchar pxToTheBottom = srcImg.at<Vec3b>((int)srcRow + 1, (int)srcCol)[i];
+            uchar pxToTheRightDiagonal = srcImg.at<Vec3b>((int)srcRow + 1, (int)srcCol + 1)[i];
+
+            uchar pxCentre = (pxRef * (1 - weightVertical) + pxToTheBottom * weightVertical) * (1 - weightHorizontal)
+                + (pxToTheRight * (1 - weightVertical) + pxToTheRightDiagonal * weightVertical) * weightHorizontal;
+
+            dstImg.at<Vec3b>(dstRow, dstCol)[i] = pxCentre;
+        }
+    }
+}
+
+void displayImage(Mat& image, string displayName)
+{
+	namedWindow(displayName, WINDOW_AUTOSIZE);
+	imshow(displayName, image);
+}

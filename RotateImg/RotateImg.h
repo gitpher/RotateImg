@@ -5,11 +5,14 @@
 #include <opencv2/highgui.hpp>
 
 #include <iostream>
-#include <stdint.h>
+#include <stdbool.h>
 #include <cmath>
 
 using namespace std;
 using namespace cv;
 
-
-void displayImage(Mat &image, string name); // 나중에 name 어떻게 바꿀지 정하기
+Mat createDstImg(Mat& srcImg, const double radian);
+void fillDstImg(Mat& dstImg, Mat& srcImg, double radian);
+bool isOutOfBounds(Mat& dstImg, Mat& srcImg, int dstRow, int dstCol, float srcRow, float srcCol);
+void interpolateDstImg(Mat& dstImg, Mat& srcImg, int dstRow, int dstCol, double srcRow, double srcCol);
+void displayImage(Mat& image, const string displayName);
