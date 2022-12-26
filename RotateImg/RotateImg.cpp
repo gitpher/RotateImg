@@ -9,15 +9,12 @@ Mat createDstImg(Mat& srcImg, double angle)
 {
     double radian;
 
-    if (angle > 90)
+    int cnt = abs(angle / 90);
+    for (int i = 0; i < cnt; i++)
     {
-        angle -= 90;
-        radian = getRadian(angle);
+        (angle > 0) ? angle -= 90: angle += 90;
     }
-    else
-    {
-        radian = getRadian(angle);
-    }
+    radian = getRadian(angle);
 
 	int dstRow = (srcImg.cols * sin(radian)) + (srcImg.rows * cos(radian));
 	int dstCol = (srcImg.cols * cos(radian)) + (srcImg.rows * sin(radian));
