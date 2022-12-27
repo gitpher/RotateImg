@@ -10,7 +10,7 @@ int main(int argc, char* argv[])
 
     if (imgPath == NULL || srcImg.empty())
     {
-        cout << "*** THERE IS NO IMAGE (PLEASE CHECK IF THE IMAGE IS VALID) ***" << endl;
+        cout << "*** ERROR: NO IMAGE (PLEASE CHECK IF THE IMAGE IS VALID) ***" << endl;
         return 1;
     }
 

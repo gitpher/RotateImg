@@ -8,12 +8,13 @@ double getRadian(double angle)
 Mat createDstImg(Mat& srcImg, double angle)
 {
     double radian;
-
+    
     int cnt = abs(angle / 90);
     for (int i = 0; i < cnt; i++)
     {
-        (angle > 0) ? angle -= 90: angle += 90;
+        (angle > 0) ? angle -= 90 : angle += 90;
     }
+
     radian = getRadian(angle);
 
 	int dstRow = (srcImg.cols * sin(radian)) + (srcImg.rows * cos(radian));
