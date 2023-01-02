@@ -14,16 +14,9 @@ int main(int argc, char* argv[])
         return 1;
     }
 
-    std::cerr << "Num src pixels: " << srcImg.rows * srcImg.cols << std::endl;
-
     Mat dstImg = createDstImg(srcImg, angle);
 
-    int64 tic = getTickCount();
     fillDstImg(dstImg, srcImg, radian);
-    std::cerr << "Elapsed time for fillDstImg(): " << (getTickCount() - tic) / getTickFrequency() * 1000 << " ms" << std::endl;
-    // tic = getTickCount();
-    // fillDstImg2(dstImg, srcImg, radian);
-    // std::cerr << "Elapsed time for fillDstImg2(): " << (getTickCount() - tic) / getTickFrequency() * 1000 << " ms" << std::endl;
 
     displayImage(srcImg, "ORIGINAL IMAGE");
     displayImage(dstImg, "ROTATED IMAGE");

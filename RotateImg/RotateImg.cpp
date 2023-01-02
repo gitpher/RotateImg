@@ -9,29 +9,17 @@ Mat createDstImg(Mat& srcImg, double angle)
 {
     double radian = getRadian(angle);
 
-    /*double x1 = 0 - ((srcImg.cols / 2) - 0.5);
+    double x1 = 0 - ((srcImg.cols / 2) - 0.5);
     double y1 = 0 - ((srcImg.rows / 2) - 0.5);
 
-    double x2 = (srcImg.cols - 1) - ((srcImg.cols / 2) - 0.5); 
+    double x2 = (srcImg.cols - 1) - ((srcImg.cols / 2) - 0.5);
     double y2 = 0 - ((srcImg.rows / 2) - 0.5);
 
-    double x3 = 0 - ((srcImg.cols / 2) - 0.5);              
+    double x3 = 0 - ((srcImg.cols / 2) - 0.5);
     double y3 = (srcImg.rows - 1) - ((srcImg.rows / 2) - 0.5);
 
-    double x4 = (srcImg.cols - 1) - ((srcImg.cols / 2) - 0.5); 
-    double y4 = (srcImg.rows - 1) - ((srcImg.rows / 2) - 0.5);*/
-
-    double x1 = 0;
-    double y1 = 0;
-
-    double x2 = (srcImg.cols - 1);
-    double y2 = 0;
-
-    double x3 = 0;
-    double y3 = (srcImg.rows - 1);
-
-    double x4 = (srcImg.cols - 1);
-    double y4 = (srcImg.rows - 1);
+    double x4 = (srcImg.cols - 1) - ((srcImg.cols / 2) - 0.5);
+    double y4 = (srcImg.rows - 1) - ((srcImg.rows / 2) - 0.5);
 
     double x1P = (x1 * cos(radian)) - (y1 * sin(radian));
     double y1P = (x1 * sin(radian)) + (y1 * cos(radian));
@@ -92,8 +80,6 @@ double findMin(double arr[], int cnt)
 
 void fillDstImg(Mat& dstImg, Mat& srcImg, double radian)
 {
-    int count_compute = 0;
-    int count_iterate = 0;
     for (int dstRow = 0; dstRow < dstImg.rows; dstRow++)
     {
         for (int dstCol = 0; dstCol < dstImg.cols; dstCol++)
@@ -107,50 +93,17 @@ void fillDstImg(Mat& dstImg, Mat& srcImg, double radian)
             double srcRow = yP + ((srcImg.rows / 2) - 0.5);
             double srcCol = xP + ((srcImg.cols / 2) - 0.5);
 
-            count_iterate++;
-
-            if (isOutOfBounds(dstImg, srcImg, srcRow, srcCol)) 
+            if (isOutOfBounds(srcImg, srcRow, srcCol)) 
             {
                 continue;
             }
-
-            count_compute++;
 
             interpolateDstImg(dstImg, srcImg, dstRow, dstCol, srcRow, srcCol); 
         }
     }
-    
-    std::cerr << "Num iterated pixels: " << count_iterate << std::endl;
-    std::cerr << "Num computed pixels: " << count_compute << std::endl;
 }
 
-void fillDstImg2(Mat& dstImg, Mat& srcImg, double radian)
-{
-    for (int dstRow = 0; dstRow < dstImg.rows; dstRow++)
-    {
-        for (int dstCol = 0; dstCol < dstImg.cols; dstCol++)
-        {
-            double x = dstCol - ((dstImg.cols / 2) - 0.5);
-            double y = dstRow - ((dstImg.rows / 2) - 0.5);
-
-            double xP = (x * cos(radian)) + (y * sin(radian));
-            double yP = ((-x) * sin(radian)) + (y * cos(radian));
-
-            double srcRow = yP + ((srcImg.rows / 2) - 0.5);
-            double srcCol = xP + ((srcImg.cols / 2) - 0.5);
-
-            if (isOutOfBounds(dstImg, srcImg, srcRow, srcCol))
-            {
-                continue;
-            }
-
-            interpolateDstImg2(dstImg, srcImg, dstRow, dstCol, srcRow, srcCol);
-        }
-    }
-}
-
-
-bool isOutOfBounds(Mat& dstImg, Mat& srcImg, double srcRow, double srcCol)
+bool isOutOfBounds(Mat& srcImg, double srcRow, double srcCol)
 {
     if (srcRow < 0 || srcRow > srcImg.rows - 1)
     {
@@ -207,52 +160,8 @@ void interpolateDstImg(Mat& dstImg, Mat& srcImg, int dstRow, int dstCol, double 
     }
 }
 
-void interpolateDstImg2(Mat& dstImg, Mat& srcImg, int dstRow, int dstCol, double srcRow, double srcCol)
-{
-    {
-        double weightHorizontal = srcCol - floor(srcCol);
-        double weightVertical = srcRow - floor(srcRow);
-
-        if (srcRow + 1 >= srcImg.rows && srcCol + 1 >= srcImg.cols) // right diagonal
-        {
-            dstImg.at<Vec3b>(dstRow, dstCol) = srcImg.at<Vec3b>((int)srcRow, (int)srcCol);
-        }
-        else if (srcCol + 1 >= srcImg.cols) // right
-        {
-            Vec3b pxRef = srcImg.at<Vec3b>((int)srcRow, (int)srcCol);
-            Vec3b pxToTheBottom = srcImg.at<Vec3b>((int)srcRow + 1, (int)srcCol);
-
-            Vec3b pxCentre = pxRef * (1 - weightVertical) + pxToTheBottom * weightVertical;
-
-            dstImg.at<Vec3b>(dstRow, dstCol) = pxCentre;
-        }
-        else if (srcRow + 1 >= srcImg.rows) // bottom
-        {
-            Vec3b pxRef = srcImg.at<Vec3b>((int)srcRow, (int)srcCol);
-            Vec3b pxToTheRight = srcImg.at<Vec3b>((int)srcRow, (int)srcCol + 1);
-
-            Vec3b pxCentre = pxRef * (1 - weightHorizontal) + pxToTheRight * weightHorizontal;
-
-            dstImg.at<Vec3b>(dstRow, dstCol) = pxCentre;
-        }
-        else
-        {
-            Vec3b pxRef = srcImg.at<Vec3b>((int)srcRow, (int)srcCol);
-            Vec3b pxToTheRight = srcImg.at<Vec3b>((int)srcRow, (int)srcCol + 1);
-            Vec3b pxToTheBottom = srcImg.at<Vec3b>((int)srcRow + 1, (int)srcCol);
-            Vec3b pxToTheRightDiagonal = srcImg.at<Vec3b>((int)srcRow + 1, (int)srcCol + 1);
-
-            Vec3b pxCentre = (pxRef * (1 - weightVertical) + pxToTheBottom * weightVertical) * (1 - weightHorizontal)
-                + (pxToTheRight * (1 - weightVertical) + pxToTheRightDiagonal * weightVertical) * weightHorizontal;
-
-            dstImg.at<Vec3b>(dstRow, dstCol) = pxCentre;
-        }
-    }
-}
-
-
 void displayImage(Mat& image, string displayName)
 {
-	namedWindow(displayName, WINDOW_NORMAL | WINDOW_KEEPRATIO);
+    namedWindow(displayName, WINDOW_AUTOSIZE);
 	imshow(displayName, image);
 }
