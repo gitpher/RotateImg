@@ -45,9 +45,9 @@ Mat createDstImg(Mat& srcImg, double angle)
     double dstCol = maxX - minX;
     double dstRow = maxY - minY;
 
-	Mat dstImg(dstRow, dstCol, CV_8UC3, Scalar(0, 0, 0));
+    Mat dstImg(dstRow, dstCol, CV_8UC3, Scalar(0, 0, 0));
 
-	return dstImg;
+    return dstImg;
 }
 
 double findMax(double arr[], int cnt)
@@ -87,18 +87,18 @@ void fillDstImg(Mat& dstImg, Mat& srcImg, double radian)
             double x = dstCol - ((dstImg.cols / 2) - 0.5);
             double y = dstRow - ((dstImg.rows / 2) - 0.5);
 
-            double xP = (x * cos(radian)) + (y * sin(radian)); 
-            double yP = ((-x) * sin(radian)) + (y * cos(radian)); 
+            double xP = (x * cos(radian)) + (y * sin(radian));
+            double yP = ((-x) * sin(radian)) + (y * cos(radian));
 
             double srcRow = yP + ((srcImg.rows / 2) - 0.5);
             double srcCol = xP + ((srcImg.cols / 2) - 0.5);
 
-            if (isOutOfBounds(srcImg, srcRow, srcCol)) 
+            if (isOutOfBounds(srcImg, srcRow, srcCol))
             {
                 continue;
             }
 
-            interpolateDstImg(dstImg, srcImg, dstRow, dstCol, srcRow, srcCol); 
+            interpolateDstImg(dstImg, srcImg, dstRow, dstCol, srcRow, srcCol);
         }
     }
 }
@@ -163,5 +163,5 @@ void interpolateDstImg(Mat& dstImg, Mat& srcImg, int dstRow, int dstCol, double 
 void displayImage(Mat& image, string displayName)
 {
     namedWindow(displayName, WINDOW_AUTOSIZE);
-	imshow(displayName, image);
+    imshow(displayName, image);
 }

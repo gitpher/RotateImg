@@ -18,7 +18,6 @@ Mat createDstImg(Mat& srcImg, double angle);
 double findMax(double arr[], int cnt);
 double findMin(double arr[], int cnt);
 void fillDstImg(Mat& dstImg, Mat& srcImg, double radian);
-void fillDstImg2(Mat& dstImg, Mat& srcImg, double radian);
 bool isOutOfBounds(Mat& srcImg, double srcRow, double srcCol);
 void interpolateDstImg(Mat& dstImg, Mat& srcImg, int dstRow, int dstCol, double srcRow, double srcCol);
 void displayImage(Mat& image, const string displayName);
