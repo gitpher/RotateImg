@@ -13,6 +13,7 @@ using namespace cv;
 
 const double PI = 3.14159265358979323846;
 
+extern "C" __declspec(dllexport) Mat readImage(char* imgPath);
 extern "C" __declspec(dllexport) double getRadian(double angle);
 extern "C" __declspec(dllexport) Mat createDstImg(Mat& srcImg, double angle);
 extern "C" __declspec(dllexport) double findMax(double arr[], int cnt);

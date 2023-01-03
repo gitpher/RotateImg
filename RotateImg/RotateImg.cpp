@@ -1,5 +1,11 @@
 ﻿#include "RotateImg.h"
 
+Mat readImage(char* imgPath)
+{
+    Mat img = imread(imgPath);
+    return img;
+}
+
 double getRadian(double angle)
 {
     return angle * PI / 180;
