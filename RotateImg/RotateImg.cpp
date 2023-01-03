@@ -84,7 +84,7 @@ double findMin(double arr[], int cnt)
     return min;
 }
 
-void fillDstImg(Mat& dstImg, Mat& srcImg, double radian)
+Mat fillDstImg(Mat& dstImg, Mat& srcImg, double radian)
 {
     for (int dstRow = 0; dstRow < dstImg.rows; dstRow++)
     {
@@ -107,6 +107,7 @@ void fillDstImg(Mat& dstImg, Mat& srcImg, double radian)
             interpolateDstImg(dstImg, srcImg, dstRow, dstCol, srcRow, srcCol);
         }
     }
+    return dstImg;
 }
 
 bool isOutOfBounds(Mat& srcImg, double srcRow, double srcCol)

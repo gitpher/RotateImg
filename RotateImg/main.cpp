@@ -16,10 +16,11 @@ int main(int argc, char* argv[])
 
     Mat dstImg = createDstImg(srcImg, angle);
 
-    fillDstImg(dstImg, srcImg, radian);
+    Mat filledDstImg = fillDstImg(dstImg, srcImg, radian);
 
     displayImage(srcImg, "ORIGINAL IMAGE");
-    displayImage(dstImg, "ROTATED IMAGE");
+    displayImage(filledDstImg, "ROTATED IMAGE");
     waitKey(0);
+
     return 0;
 }
