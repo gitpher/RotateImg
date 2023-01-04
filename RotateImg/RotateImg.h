@@ -13,7 +13,8 @@ using namespace cv;
 
 const double PI = 3.14159265358979323846;
 
-// added field member 
+// added field member
+typedef unsigned char byte;
 
 // original field method
 extern "C" __declspec(dllexport) double getRadian(double angle);
@@ -26,4 +27,5 @@ extern "C" __declspec(dllexport) void interpolateDstImg(Mat& dstImg, Mat& srcImg
 extern "C" __declspec(dllexport) void displayImg(Mat& image, const string displayName);
 
 // added field method
-extern "C" __declspec(dllexport) Mat readImg(char* imgPath);
+extern "C" __declspec(dllexport) void* readImg(char* imgPath);
+extern "C" __declspec(dllexport) byte* matToBytes(Mat img);

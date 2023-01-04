@@ -1,11 +1,26 @@
 ﻿#include "RotateImg.h"
 
-Mat readImg(char* imgPath)
+void* readImg(char* imgPath)
 {
-    Mat img = imread(imgPath);
+    Mat img = imread(imgPath); // this img can be gone by the time this function ends
+    
+    // verification
+    imshow("verification", img); waitKey(0);
 
-    return img;
+    // add exception
+
+    return img.data; // this has to be changed
 }
+
+byte* matToBytes(Mat img)
+{
+    int size = img.total() * img.elemSize();
+    byte* bytes = new byte[size];
+    memcpy(bytes, img.data, size * sizeof(byte));
+
+    return bytes;
+}
+
 
 double getRadian(double angle)
 {
