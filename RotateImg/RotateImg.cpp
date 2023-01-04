@@ -1,8 +1,9 @@
 ﻿#include "RotateImg.h"
 
-Mat readImage(char* imgPath)
+Mat readImg(char* imgPath)
 {
     Mat img = imread(imgPath);
+
     return img;
 }
 
@@ -167,7 +168,7 @@ void interpolateDstImg(Mat& dstImg, Mat& srcImg, int dstRow, int dstCol, double 
     }
 }
 
-void displayImage(Mat& image, string displayName)
+void displayImg(Mat& image, string displayName)
 {
     namedWindow(displayName, WINDOW_AUTOSIZE);
     imshow(displayName, image);
