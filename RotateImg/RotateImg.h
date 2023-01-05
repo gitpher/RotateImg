@@ -3,6 +3,8 @@
 #include <opencv2/core.hpp>
 #include <opencv2/imgcodecs.hpp>
 #include <opencv2/highgui.hpp>
+#include "opencv2/imgproc/imgproc.hpp"
+#include "opencv2/opencv.hpp"
 
 #include <iostream>
 #include <stdbool.h>
@@ -18,7 +20,6 @@ typedef unsigned char byte;
 
 // original field method
 extern "C" __declspec(dllexport) double getRadian(double angle);
-extern "C" __declspec(dllexport) Mat createDstImg(Mat& srcImg, double angle);
 extern "C" __declspec(dllexport) double findMax(double arr[], int cnt);
 extern "C" __declspec(dllexport) double findMin(double arr[], int cnt);
 extern "C" __declspec(dllexport) Mat fillDstImg(Mat& dstImg, Mat& srcImg, double radian);
@@ -27,5 +28,20 @@ extern "C" __declspec(dllexport) void interpolateDstImg(Mat& dstImg, Mat& srcImg
 extern "C" __declspec(dllexport) void displayImg(Mat& image, const string displayName);
 
 // added field method
-extern "C" __declspec(dllexport) void* readImg(char* imgPath);
-extern "C" __declspec(dllexport) byte* matToBytes(Mat img);
+
+extern "C" __declspec(dllexport) struct IMAGE
+{
+	int width;
+	int height;
+	int channels;
+	uint8_t* data;
+};
+
+extern "C" __declspec(dllexport) IMAGE * happyDay(); 
+
+extern "C" __declspec(dllexport) IMAGE* readImg(char* imgPath);
+extern "C" __declspec(dllexport) string type2str(int type);
+extern "C" __declspec(dllexport) Mat bgr2bgra(Mat& imgBGR);
+extern "C" __declspec(dllexport) void* createDstImg(int rows, int cols, double angle);
+
+

@@ -1,47 +1,88 @@
 ﻿#include "RotateImg.h"
 
-void* readImg(char* imgPath)
+IMAGE* readImg(char* imgPath)
 {
-    Mat img = imread(imgPath); // this img can be gone by the time this function ends
-    
-    // verification
-    imshow("verification", img); waitKey(0);
+    Mat img = imread(imgPath);
 
-    // add exception
+    img = bgr2bgra(img);
 
-    return img.data; // this has to be changed
+    int imgSize = img.rows * img.cols * img.channels();
+
+    uint8_t* imgPtr = new uint8_t[imgSize];
+
+    memcpy(imgPtr, img.data, imgSize);
+
+    IMAGE* image = new IMAGE();
+    image->width = img.cols;
+    image->height = img.rows;
+    image->channels = img.channels();
+    image->data = imgPtr;
+
+    return image;
 }
 
-byte* matToBytes(Mat img)
+IMAGE* happyDay()
 {
-    int size = img.total() * img.elemSize();
-    byte* bytes = new byte[size];
-    memcpy(bytes, img.data, size * sizeof(byte));
+    IMAGE* image = new IMAGE();
+    image->width = 100;
+    image->height = 200;
+    uint8_t* imgPtr = new uint8_t[100];
+    image->data = imgPtr;
 
-    return bytes;
+    return image;
 }
 
+Mat bgr2bgra(Mat& imgBGR)
+{
+    Mat imgBGRA;
+    cvtColor(imgBGR, imgBGRA, COLOR_BGR2BGRA);
+    return imgBGRA;
+}
+
+string type2str(int type) 
+{
+    string r;
+
+    uchar depth = type & CV_MAT_DEPTH_MASK;
+    uchar chans = 1 + (type >> CV_CN_SHIFT);
+
+    switch (depth) {
+    case CV_8U:  r = "8U"; break;
+    case CV_8S:  r = "8S"; break;
+    case CV_16U: r = "16U"; break;
+    case CV_16S: r = "16S"; break;
+    case CV_32S: r = "32S"; break;
+    case CV_32F: r = "32F"; break;
+    case CV_64F: r = "64F"; break;
+    default:     r = "User"; break;
+    }
+
+    r += "C";
+    r += (chans + '0');
+
+    return r;
+}
 
 double getRadian(double angle)
 {
     return angle * PI / 180;
 }
 
-Mat createDstImg(Mat& srcImg, double angle)
+void* createDstImg(int rows, int cols, double angle)
 {
     double radian = getRadian(angle);
 
-    double x1 = 0 - ((srcImg.cols / 2) - 0.5);
-    double y1 = 0 - ((srcImg.rows / 2) - 0.5);
+    double x1 = 0 - ((cols / 2) - 0.5);
+    double y1 = 0 - ((rows / 2) - 0.5);
 
-    double x2 = (srcImg.cols - 1) - ((srcImg.cols / 2) - 0.5);
-    double y2 = 0 - ((srcImg.rows / 2) - 0.5);
+    double x2 = (cols - 1) - ((cols / 2) - 0.5);
+    double y2 = 0 - ((rows / 2) - 0.5);
 
-    double x3 = 0 - ((srcImg.cols / 2) - 0.5);
-    double y3 = (srcImg.rows - 1) - ((srcImg.rows / 2) - 0.5);
+    double x3 = 0 - ((cols / 2) - 0.5);
+    double y3 = (rows - 1) - ((rows / 2) - 0.5);
 
-    double x4 = (srcImg.cols - 1) - ((srcImg.cols / 2) - 0.5);
-    double y4 = (srcImg.rows - 1) - ((srcImg.rows / 2) - 0.5);
+    double x4 = (cols - 1) - ((cols / 2) - 0.5);
+    double y4 = (rows - 1) - ((rows / 2) - 0.5);
 
     double x1P = (x1 * cos(radian)) - (y1 * sin(radian));
     double y1P = (x1 * sin(radian)) + (y1 * cos(radian));
@@ -67,9 +108,15 @@ Mat createDstImg(Mat& srcImg, double angle)
     double dstCol = maxX - minX;
     double dstRow = maxY - minY;
 
-    Mat dstImg(dstRow, dstCol, CV_8UC3, Scalar(0, 0, 0));
+    Mat img(dstRow, dstCol, CV_8UC4, Scalar(255, 255, 255, 255)); // CV_8UC3 -> CV_8UC4
 
-    return dstImg;
+    int imgSize = img.rows * img.cols * img.channels();
+
+    uint8_t* imgPtr = new uint8_t[imgSize];
+
+    memcpy(imgPtr, img.data, imgSize);
+
+    return imgPtr;
 }
 
 double findMax(double arr[], int cnt)
