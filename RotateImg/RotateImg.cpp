@@ -21,17 +21,6 @@ IMAGE* readImg(char* imgPath)
     return image;
 }
 
-IMAGE* happyDay()
-{
-    IMAGE* image = new IMAGE();
-    image->width = 100;
-    image->height = 200;
-    uint8_t* imgPtr = new uint8_t[100];
-    image->data = imgPtr;
-
-    return image;
-}
-
 Mat bgr2bgra(Mat& imgBGR)
 {
     Mat imgBGRA;
@@ -68,21 +57,21 @@ double getRadian(double angle)
     return angle * PI / 180;
 }
 
-void* createDstImg(int rows, int cols, double angle)
+IMAGE* createDstImg(IMAGE& srcImg, double angle)
 {
     double radian = getRadian(angle);
 
-    double x1 = 0 - ((cols / 2) - 0.5);
-    double y1 = 0 - ((rows / 2) - 0.5);
+    double x1 = 0 - ((srcImg.width / 2) - 0.5);
+    double y1 = 0 - ((srcImg.height / 2) - 0.5);
 
-    double x2 = (cols - 1) - ((cols / 2) - 0.5);
-    double y2 = 0 - ((rows / 2) - 0.5);
+    double x2 = (srcImg.width - 1) - ((srcImg.width / 2) - 0.5);
+    double y2 = 0 - ((srcImg.height / 2) - 0.5);
 
-    double x3 = 0 - ((cols / 2) - 0.5);
-    double y3 = (rows - 1) - ((rows / 2) - 0.5);
+    double x3 = 0 - ((srcImg.width / 2) - 0.5);
+    double y3 = (srcImg.height - 1) - ((srcImg.height / 2) - 0.5);
 
-    double x4 = (cols - 1) - ((cols / 2) - 0.5);
-    double y4 = (rows - 1) - ((rows / 2) - 0.5);
+    double x4 = (srcImg.width - 1) - ((srcImg.width / 2) - 0.5);
+    double y4 = (srcImg.height - 1) - ((srcImg.height / 2) - 0.5);
 
     double x1P = (x1 * cos(radian)) - (y1 * sin(radian));
     double y1P = (x1 * sin(radian)) + (y1 * cos(radian));
@@ -116,7 +105,13 @@ void* createDstImg(int rows, int cols, double angle)
 
     memcpy(imgPtr, img.data, imgSize);
 
-    return imgPtr;
+    IMAGE* image = new IMAGE;
+    image->width = img.cols;
+    image->height = img.rows;
+    image->channels = img.channels();
+    image->data = imgPtr;
+
+    return image;
 }
 
 double findMax(double arr[], int cnt)

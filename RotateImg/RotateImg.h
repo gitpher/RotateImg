@@ -37,11 +37,9 @@ extern "C" __declspec(dllexport) struct IMAGE
 	uint8_t* data;
 };
 
-extern "C" __declspec(dllexport) IMAGE * happyDay(); 
-
 extern "C" __declspec(dllexport) IMAGE* readImg(char* imgPath);
 extern "C" __declspec(dllexport) string type2str(int type);
 extern "C" __declspec(dllexport) Mat bgr2bgra(Mat& imgBGR);
-extern "C" __declspec(dllexport) void* createDstImg(int rows, int cols, double angle);
+extern "C" __declspec(dllexport) IMAGE * createDstImg(IMAGE & srcImg, double angle);
 
 
