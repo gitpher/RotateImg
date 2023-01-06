@@ -57,6 +57,17 @@ double getRadian(double angle)
     return angle * PI / 180;
 }
 
+IMAGE* RotateImg(IMAGE& srcImg, double angle)
+{
+    IMAGE* dstImg = createDstImg(srcImg, angle);
+
+    double radian = getRadian(angle);
+
+    fillDstImg(dstImg, srcImg, radian);
+
+    return dstImg;
+}
+
 IMAGE* createDstImg(IMAGE& srcImg, double angle)
 {
     double radian = getRadian(angle);
@@ -97,7 +108,7 @@ IMAGE* createDstImg(IMAGE& srcImg, double angle)
     double dstCol = maxX - minX;
     double dstRow = maxY - minY;
 
-    Mat img(dstRow, dstCol, CV_8UC4, Scalar(255, 255, 255, 255)); // CV_8UC3 -> CV_8UC4
+    Mat img(dstRow, dstCol, CV_8UC4, Scalar(0, 0, 0, 0)); // CV_8UC3 -> CV_8UC4
 
     int imgSize = img.rows * img.cols * img.channels();
 
@@ -142,14 +153,14 @@ double findMin(double arr[], int cnt)
     return min;
 }
 
-void fillDstImg(IMAGE& dstImg, IMAGE& srcImg, double radian)
+void fillDstImg(IMAGE* dstImg, IMAGE& srcImg, double radian)
 {
-    for (int dstRow = 0; dstRow < dstImg.height; dstRow++)
+    for (int dstRow = 0; dstRow < dstImg->height; dstRow++)
     {
-        for (int dstCol = 0; dstCol < dstImg.width; dstCol++)
+        for (int dstCol = 0; dstCol < dstImg->width; dstCol++)
         {
-            double x = dstCol - ((dstImg.width / 2) - 0.5);
-            double y = dstRow - ((dstImg.height / 2) - 0.5);
+            double x = dstCol - ((dstImg->width / 2) - 0.5);
+            double y = dstRow - ((dstImg->height / 2) - 0.5);
 
             double xP = (x * cos(radian)) + (y * sin(radian));
             double yP = ((-x) * sin(radian)) + (y * cos(radian));
@@ -180,53 +191,47 @@ bool isOutOfBounds(IMAGE& srcImg, double srcRow, double srcCol)
     return false;
 }
 
-void interpolateDstImg(IMAGE& dstImg, IMAGE& srcImg, int dstRow, int dstCol, double srcRow, double srcCol)
+void interpolateDstImg(IMAGE* dstImg, IMAGE& srcImg, int dstRow, int dstCol, double srcRow, double srcCol)
 {
-    for (int ch = 0; ch < dstImg.channels; ch++) // 4번 돌아야 함
+    for (int ch = 0; ch < dstImg->channels; ch++)
     {
         double weightHorizontal = srcCol - floor(srcCol);
         double weightVertical = srcRow - floor(srcRow);
 
-        int dstIdx = ThreeDimArrayIdx2OneDimArrayIdx(dstRow, dstCol, ch, dstImg.width, dstImg.channels);
+        int dstIdx = ThreeDimArrayIdx2OneDimArrayIdx(dstRow, dstCol, ch, dstImg->width, dstImg->channels);
 
         int pxRefIdx = ThreeDimArrayIdx2OneDimArrayIdx(srcRow, srcCol, ch, srcImg.width, srcImg.channels);
         int pxToTheRightIdx = ThreeDimArrayIdx2OneDimArrayIdx(srcRow, srcCol + 1, ch, srcImg.width, srcImg.channels);
         int pxToTheBottomIdx = ThreeDimArrayIdx2OneDimArrayIdx(srcRow + 1, srcCol, ch, srcImg.width, srcImg.channels);
         int pxToTheRightDiagonalIdx = ThreeDimArrayIdx2OneDimArrayIdx(srcRow + 1, srcCol + 1, ch, srcImg.width, srcImg.channels);
         
+        uchar pxRef = srcImg.data[pxRefIdx];
+        uchar pxToTheRight = srcImg.data[pxToTheRightIdx];
+        uchar pxToTheBottom = srcImg.data[pxToTheBottomIdx];
+        uchar pxToTheRightDiagonal = srcImg.data[pxToTheRightDiagonalIdx];
+
         if (srcRow + 1 >= srcImg.height && srcCol + 1 >= srcImg.width) // right diagonal
         {
-            dstImg.data[dstIdx] = srcImg.data[pxRefIdx];
+            dstImg->data[dstIdx] = srcImg.data[pxRefIdx];
         }
         else if (srcCol + 1 >= srcImg.width) // right
         {    
-            uchar pxRef = srcImg.data[pxRefIdx];
-            uchar pxToTheBottom = srcImg.data[pxToTheBottomIdx];
-
             uchar pxCentre = pxRef * (1 - weightVertical) + pxToTheBottom * weightVertical;
 
-            dstImg.data[dstIdx] = pxCentre;
+            dstImg->data[dstIdx] = pxCentre;
         }
         else if (srcRow + 1 >= srcImg.height) // bottom
         {
-            uchar pxRef = srcImg.data[pxRefIdx];
-            uchar pxToTheRight = srcImg.data[pxToTheRightIdx];
-
             uchar pxCentre = pxRef * (1 - weightHorizontal) + pxToTheRight * weightHorizontal;
 
-            dstImg.data[dstIdx] = pxCentre;
+            dstImg->data[dstIdx] = pxCentre;
         }
         else
         {
-            uchar pxRef = srcImg.data[pxRefIdx];
-            uchar pxToTheRight = srcImg.data[pxToTheRightIdx];
-            uchar pxToTheBottom = srcImg.data[pxToTheBottomIdx];
-            uchar pxToTheRightDiagonal = srcImg.data[pxToTheRightDiagonalIdx];
-
             uchar pxCentre = (pxRef * (1 - weightVertical) + pxToTheBottom * weightVertical) * (1 - weightHorizontal)
                 + (pxToTheRight * (1 - weightVertical) + pxToTheRightDiagonal * weightVertical) * weightHorizontal;
 
-            dstImg.data[dstIdx] = pxCentre;
+            dstImg->data[dstIdx] = pxCentre;
         }
     }
 }
@@ -240,4 +245,9 @@ void displayImg(Mat& image, string displayName)
 {
     namedWindow(displayName, WINDOW_AUTOSIZE);
     imshow(displayName, image);
+}
+
+void deleteImg(IMAGE& image)
+{
+    delete[] image.data;
 }

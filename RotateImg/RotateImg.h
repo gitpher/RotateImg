@@ -15,17 +15,6 @@ using namespace cv;
 
 const double PI = 3.14159265358979323846;
 
-// added field member
-typedef unsigned char byte;
-
-// original field method
-extern "C" __declspec(dllexport) double getRadian(double angle);
-extern "C" __declspec(dllexport) double findMax(double arr[], int cnt);
-extern "C" __declspec(dllexport) double findMin(double arr[], int cnt);
-extern "C" __declspec(dllexport) void displayImg(Mat& image, const string displayName);
-
-// added field method
-
 extern "C" __declspec(dllexport) struct IMAGE
 {
 	int width;
@@ -34,11 +23,17 @@ extern "C" __declspec(dllexport) struct IMAGE
 	uint8_t* data;
 };
 
-extern "C" __declspec(dllexport) IMAGE* readImg(char* imgPath);
+extern "C" __declspec(dllexport) IMAGE * readImg(char* imgPath);
+extern "C" __declspec(dllexport) Mat bgr2bgra(Mat & imgBGR);
 extern "C" __declspec(dllexport) string type2str(int type);
-extern "C" __declspec(dllexport) Mat bgr2bgra(Mat& imgBGR);
+extern "C" __declspec(dllexport) double getRadian(double angle);
+extern "C" __declspec(dllexport) IMAGE* RotateImg(IMAGE& srcImg, double angle);
 extern "C" __declspec(dllexport) IMAGE * createDstImg(IMAGE & srcImg, double angle);
-extern "C" __declspec(dllexport) int ThreeDimArrayIdx2OneDimArrayIdx(int row, int col, int ch, int width, int channels);
-extern "C" __declspec(dllexport) void fillDstImg(IMAGE & dstImg, IMAGE & srcImg, double radian);
+extern "C" __declspec(dllexport) double findMax(double arr[], int cnt);
+extern "C" __declspec(dllexport) double findMin(double arr[], int cnt);
+extern "C" __declspec(dllexport) void fillDstImg(IMAGE * dstImg, IMAGE & srcImg, double radian);
 extern "C" __declspec(dllexport) bool isOutOfBounds(IMAGE & srcImg, double srcRow, double srcCol);
-extern "C" __declspec(dllexport) void interpolateDstImg(IMAGE & dstImg, IMAGE & srcImg, int dstRow, int dstCol, double srcRow, double srcCol);
+extern "C" __declspec(dllexport) void interpolateDstImg(IMAGE * dstImg, IMAGE & srcImg, int dstRow, int dstCol, double srcRow, double srcCol);
+extern "C" __declspec(dllexport) int ThreeDimArrayIdx2OneDimArrayIdx(int row, int col, int ch, int width, int channels);
+extern "C" __declspec(dllexport) void displayImg(Mat& image, const string displayName);
+extern "C" __declspec(dllexport) void deleteImg(IMAGE& image);
