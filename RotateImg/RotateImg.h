@@ -22,9 +22,6 @@ typedef unsigned char byte;
 extern "C" __declspec(dllexport) double getRadian(double angle);
 extern "C" __declspec(dllexport) double findMax(double arr[], int cnt);
 extern "C" __declspec(dllexport) double findMin(double arr[], int cnt);
-extern "C" __declspec(dllexport) Mat fillDstImg(Mat& dstImg, Mat& srcImg, double radian);
-extern "C" __declspec(dllexport) bool isOutOfBounds(Mat& srcImg, double srcRow, double srcCol);
-extern "C" __declspec(dllexport) void interpolateDstImg(Mat& dstImg, Mat& srcImg, int dstRow, int dstCol, double srcRow, double srcCol);
 extern "C" __declspec(dllexport) void displayImg(Mat& image, const string displayName);
 
 // added field method
@@ -41,5 +38,7 @@ extern "C" __declspec(dllexport) IMAGE* readImg(char* imgPath);
 extern "C" __declspec(dllexport) string type2str(int type);
 extern "C" __declspec(dllexport) Mat bgr2bgra(Mat& imgBGR);
 extern "C" __declspec(dllexport) IMAGE * createDstImg(IMAGE & srcImg, double angle);
-
-
+extern "C" __declspec(dllexport) int ThreeDimArrayIdx2OneDimArrayIdx(int row, int col, int ch, int width, int channels);
+extern "C" __declspec(dllexport) void fillDstImg(IMAGE & dstImg, IMAGE & srcImg, double radian);
+extern "C" __declspec(dllexport) bool isOutOfBounds(IMAGE & srcImg, double srcRow, double srcCol);
+extern "C" __declspec(dllexport) void interpolateDstImg(IMAGE & dstImg, IMAGE & srcImg, int dstRow, int dstCol, double srcRow, double srcCol);

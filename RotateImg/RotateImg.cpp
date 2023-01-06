@@ -142,87 +142,98 @@ double findMin(double arr[], int cnt)
     return min;
 }
 
-Mat fillDstImg(Mat& dstImg, Mat& srcImg, double radian)
+void fillDstImg(IMAGE& dstImg, IMAGE& srcImg, double radian)
 {
-    for (int dstRow = 0; dstRow < dstImg.rows; dstRow++)
+    for (int dstRow = 0; dstRow < dstImg.height; dstRow++)
     {
-        for (int dstCol = 0; dstCol < dstImg.cols; dstCol++)
+        for (int dstCol = 0; dstCol < dstImg.width; dstCol++)
         {
-            double x = dstCol - ((dstImg.cols / 2) - 0.5);
-            double y = dstRow - ((dstImg.rows / 2) - 0.5);
+            double x = dstCol - ((dstImg.width / 2) - 0.5);
+            double y = dstRow - ((dstImg.height / 2) - 0.5);
 
             double xP = (x * cos(radian)) + (y * sin(radian));
             double yP = ((-x) * sin(radian)) + (y * cos(radian));
 
-            double srcRow = yP + ((srcImg.rows / 2) - 0.5);
-            double srcCol = xP + ((srcImg.cols / 2) - 0.5);
+            double srcRow = yP + ((srcImg.height / 2) - 0.5);
+            double srcCol = xP + ((srcImg.width / 2) - 0.5);
 
             if (isOutOfBounds(srcImg, srcRow, srcCol))
             {
                 continue;
             }
-
+            
             interpolateDstImg(dstImg, srcImg, dstRow, dstCol, srcRow, srcCol);
         }
     }
-    return dstImg;
 }
 
-bool isOutOfBounds(Mat& srcImg, double srcRow, double srcCol)
+bool isOutOfBounds(IMAGE& srcImg, double srcRow, double srcCol)
 {
-    if (srcRow < 0 || srcRow > srcImg.rows - 1)
+    if (srcRow < 0 || srcRow > srcImg.height - 1)
     {
         return true;
     }
-    if (srcCol < 0 || srcCol > srcImg.cols - 1)
+    if (srcCol < 0 || srcCol > srcImg.width - 1)
     {
         return true;
     }
     return false;
 }
 
-void interpolateDstImg(Mat& dstImg, Mat& srcImg, int dstRow, int dstCol, double srcRow, double srcCol)
+void interpolateDstImg(IMAGE& dstImg, IMAGE& srcImg, int dstRow, int dstCol, double srcRow, double srcCol)
 {
-    for (int i = 0; i < 3; i++)
+    for (int ch = 0; ch < dstImg.channels; ch++) // 4번 돌아야 함
     {
         double weightHorizontal = srcCol - floor(srcCol);
         double weightVertical = srcRow - floor(srcRow);
 
-        if (srcRow + 1 >= srcImg.rows && srcCol + 1 >= srcImg.cols) // right diagonal
+        int dstIdx = ThreeDimArrayIdx2OneDimArrayIdx(dstRow, dstCol, ch, dstImg.width, dstImg.channels);
+
+        int pxRefIdx = ThreeDimArrayIdx2OneDimArrayIdx(srcRow, srcCol, ch, srcImg.width, srcImg.channels);
+        int pxToTheRightIdx = ThreeDimArrayIdx2OneDimArrayIdx(srcRow, srcCol + 1, ch, srcImg.width, srcImg.channels);
+        int pxToTheBottomIdx = ThreeDimArrayIdx2OneDimArrayIdx(srcRow + 1, srcCol, ch, srcImg.width, srcImg.channels);
+        int pxToTheRightDiagonalIdx = ThreeDimArrayIdx2OneDimArrayIdx(srcRow + 1, srcCol + 1, ch, srcImg.width, srcImg.channels);
+        
+        if (srcRow + 1 >= srcImg.height && srcCol + 1 >= srcImg.width) // right diagonal
         {
-            dstImg.at<Vec3b>(dstRow, dstCol)[i] = srcImg.at<Vec3b>((int)srcRow, (int)srcCol)[i];
+            dstImg.data[dstIdx] = srcImg.data[pxRefIdx];
         }
-        else if (srcCol + 1 >= srcImg.cols) // right
-        {
-            uchar pxRef = srcImg.at<Vec3b>((int)srcRow, (int)srcCol)[i];
-            uchar pxToTheBottom = srcImg.at<Vec3b>((int)srcRow + 1, (int)srcCol)[i];
+        else if (srcCol + 1 >= srcImg.width) // right
+        {    
+            uchar pxRef = srcImg.data[pxRefIdx];
+            uchar pxToTheBottom = srcImg.data[pxToTheBottomIdx];
 
             uchar pxCentre = pxRef * (1 - weightVertical) + pxToTheBottom * weightVertical;
 
-            dstImg.at<Vec3b>(dstRow, dstCol)[i] = pxCentre;
+            dstImg.data[dstIdx] = pxCentre;
         }
-        else if (srcRow + 1 >= srcImg.rows) // bottom
+        else if (srcRow + 1 >= srcImg.height) // bottom
         {
-            uchar pxRef = srcImg.at<Vec3b>((int)srcRow, (int)srcCol)[i];
-            uchar pxToTheRight = srcImg.at<Vec3b>((int)srcRow, (int)srcCol + 1)[i];
+            uchar pxRef = srcImg.data[pxRefIdx];
+            uchar pxToTheRight = srcImg.data[pxToTheRightIdx];
 
             uchar pxCentre = pxRef * (1 - weightHorizontal) + pxToTheRight * weightHorizontal;
 
-            dstImg.at<Vec3b>(dstRow, dstCol)[i] = pxCentre;
+            dstImg.data[dstIdx] = pxCentre;
         }
         else
         {
-            uchar pxRef = srcImg.at<Vec3b>((int)srcRow, (int)srcCol)[i];
-            uchar pxToTheRight = srcImg.at<Vec3b>((int)srcRow, (int)srcCol + 1)[i];
-            uchar pxToTheBottom = srcImg.at<Vec3b>((int)srcRow + 1, (int)srcCol)[i];
-            uchar pxToTheRightDiagonal = srcImg.at<Vec3b>((int)srcRow + 1, (int)srcCol + 1)[i];
+            uchar pxRef = srcImg.data[pxRefIdx];
+            uchar pxToTheRight = srcImg.data[pxToTheRightIdx];
+            uchar pxToTheBottom = srcImg.data[pxToTheBottomIdx];
+            uchar pxToTheRightDiagonal = srcImg.data[pxToTheRightDiagonalIdx];
 
             uchar pxCentre = (pxRef * (1 - weightVertical) + pxToTheBottom * weightVertical) * (1 - weightHorizontal)
                 + (pxToTheRight * (1 - weightVertical) + pxToTheRightDiagonal * weightVertical) * weightHorizontal;
 
-            dstImg.at<Vec3b>(dstRow, dstCol)[i] = pxCentre;
+            dstImg.data[dstIdx] = pxCentre;
         }
     }
+}
+
+int ThreeDimArrayIdx2OneDimArrayIdx(int row, int col, int ch, int width, int channels)
+{
+    return (row * width * channels) + (col * channels) + ch;
 }
 
 void displayImg(Mat& image, string displayName)
